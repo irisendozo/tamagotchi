@@ -2,7 +2,7 @@ const {
   askQuestion, displayMessage,
 } = require('./utils/console');
 const {
-  triggerMorning, triggerNight, triggerHunger,
+  triggerMorning, triggerNight, triggerHunger, triggerPlay,
 } = require('./utils/time');
 const { ANIMALS, GENDERS } = require('./constants');
 
@@ -53,6 +53,7 @@ class Pet {
     this.triggerSleepingHabit();
     this.triggerHungerCycles();
     this.triggerWasteCycles();
+    this.triggerPlayCycles();
   }
 
   /**
@@ -143,10 +144,6 @@ class Pet {
     });
   }
 
-  isAwake() {
-    return this.state === 'awake';
-  }
-
   isHungry() {
     return this.lifeMeter.hunger <= 2;
   }
@@ -176,6 +173,10 @@ class Pet {
     });
   }
 
+  isAwake() {
+    return this.state === 'awake';
+  }
+
   isWasteFull() {
     return this.waste >= 10;
   }
@@ -186,6 +187,27 @@ class Pet {
 
   increaseWaste() {
     this.waste += 1;
+  }
+
+  /**
+   * Triggers play habit if pet is awake:
+   *  - display play message
+   *  - decrease happiness meter
+   * and is triggered by pet's concept of hunger = LIFECYCLEMS / 2
+   *
+   * @memberof Pet
+   */
+  triggerPlayCycles() {
+    triggerPlay().subscribe(() => {
+      if (this.isAwake()) {
+        displayMessage(`C'mon let's play *${this.animal.sound}*! You've been so busy!`);
+        this.decreaseHappiness();
+      }
+    });
+  }
+
+  decreaseHappiness() {
+    this.lifeMeter.happiness -= 2;
   }
 }
 

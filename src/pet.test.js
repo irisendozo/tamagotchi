@@ -4,7 +4,7 @@ const {
   askQuestion, displayMessage,
 } = require('./utils/console');
 const {
-  triggerMorning, triggerNight, triggerHunger, triggerWaste,
+  triggerMorning, triggerNight, triggerHunger, triggerWaste, triggerPlay,
 } = require('./utils/time');
 const Pet = require('./pet');
 
@@ -18,6 +18,7 @@ jest.mock('./utils/time', () => ({
   triggerNight: jest.fn(),
   triggerHunger: jest.fn(),
   triggerWaste: jest.fn(),
+  triggerPlay: jest.fn(),
 }));
 
 describe('Pet: initialize()', () => {
@@ -328,5 +329,45 @@ describe('Pet: increaseWaste()', () => {
     pet.increaseWaste();
 
     expect(pet.waste).toEqual(1);
+  });
+});
+
+describe('Pet: triggerPlayCycles()', () => {
+  beforeEach(() => {
+    jest.useFakeTimers();
+    triggerPlay.mockReturnValue(timer(100));
+  });
+
+  it('should decrease happiness by 2 if awake + display message', () => {
+    const pet = new Pet();
+    pet.state = 'awake';
+    pet.lifeMeter.happiness = 5;
+
+    pet.triggerPlayCycles();
+    jest.runOnlyPendingTimers();
+
+    expect(pet.lifeMeter.happiness).toEqual(3);
+  });
+
+  it('should not decrease happiness by if asleep', () => {
+    const pet = new Pet();
+    pet.state = 'sleeping';
+    pet.lifeMeter.happiness = 5;
+
+    pet.triggerPlayCycles();
+    jest.runOnlyPendingTimers();
+
+    expect(pet.lifeMeter.happiness).toEqual(5);
+  });
+});
+
+describe('Pet: decreaseHappiness()', () => {
+  it('should decrease happiness by 2', () => {
+    const pet = new Pet();
+    pet.lifeMeter.happiness = 5;
+
+    pet.decreaseHappiness();
+
+    expect(pet.lifeMeter.happiness).toEqual(3);
   });
 });

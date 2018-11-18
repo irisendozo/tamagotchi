@@ -34,9 +34,18 @@ const triggerHunger = () => interval(LIFECYCLEMS / 5);
  */
 const triggerWaste = () => interval(LIFECYCLEMS / 10);
 
+/**
+ * Returns an Observable.interval that emits initially at LIFECYCLEMS / 2
+ * and subsequent emissions every LIFECYCLEMS milliseconds
+ *
+ * @returns {Observable.interval} Observable.interval that emits periodically
+ */
+const triggerPlay = () => interval(LIFECYCLEMS / 2);
+
 module.exports = {
   triggerMorning,
   triggerNight,
   triggerHunger,
   triggerWaste,
+  triggerPlay,
 };
