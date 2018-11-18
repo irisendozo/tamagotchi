@@ -4,7 +4,7 @@ const {
   askQuestion, displayMessage,
 } = require('./utils/console');
 const {
-  triggerMorning,
+  triggerMorning, triggerNight, triggerHunger,
 } = require('./utils/time');
 const Pet = require('./pet');
 
@@ -15,6 +15,8 @@ jest.mock('./utils/console', () => ({
 }));
 jest.mock('./utils/time', () => ({
   triggerMorning: jest.fn(),
+  triggerNight: jest.fn(),
+  triggerHunger: jest.fn(),
 }));
 
 describe('Pet: initialize()', () => {
@@ -25,10 +27,11 @@ describe('Pet: initialize()', () => {
     expect(pet.animal.sound).toEqual(expect.any(String));
     expect(pet.gender).toEqual(expect.any(String));
     expect(pet.age).toEqual(1);
+    expect(pet.state).toEqual('awake');
     expect(pet.lifeMeter).toMatchObject({
-      hunger: 100,
-      health: 100,
-      happiness: 100,
+      hunger: 5,
+      health: 5,
+      happiness: 5,
     });
   });
 });
@@ -72,9 +75,9 @@ describe('Pet: displayStatus()', () => {
     expect(displayMessage).toHaveBeenCalledWith(`This is my status for today:
 
     Age: 1 cycle old
-    Happiness: 100
-    Hunger: 100
-    Health: 100`);
+    Happiness: 5
+    Hunger: 5
+    Health: 5`);
   });
 });
 
@@ -101,6 +104,27 @@ describe('Pet: triggerWakeUpHabit()', () => {
 
     expect(pet.age).toEqual(2);
   });
+
+  it('should set state to awake', () => {
+    const pet = new Pet();
+    pet.state = 'sleeping';
+
+    pet.triggerWakeUpHabit();
+    jest.runOnlyPendingTimers();
+
+    expect(pet.state).toEqual('awake');
+  });
+});
+
+describe('Pet: setWakeUpState()', () => {
+  it('should set wake up state', () => {
+    const pet = new Pet();
+    pet.state = 'sleeping';
+
+    pet.setWakeUpState();
+
+    expect(pet.state).toEqual('awake');
+  });
 });
 
 describe('Pet: increaseAge()', () => {
@@ -110,5 +134,105 @@ describe('Pet: increaseAge()', () => {
     pet.increaseAge();
 
     expect(pet.age).toEqual(2);
+  });
+});
+
+describe('Pet: triggerSleepingHabit()', () => {
+  beforeEach(() => {
+    jest.useFakeTimers();
+    triggerNight.mockReturnValue(timer(100));
+  });
+
+  it('should display sleeping message', () => {
+    const pet = new Pet();
+
+    pet.triggerSleepingHabit();
+    jest.runOnlyPendingTimers();
+
+    expect(displayMessage).toHaveBeenCalledTimes(1);
+  });
+
+  it('should set state to sleeping', () => {
+    const pet = new Pet();
+    pet.state = 'awake';
+
+    pet.triggerSleepingHabit();
+    jest.runOnlyPendingTimers();
+
+    expect(pet.state).toEqual('sleeping');
+  });
+});
+
+describe('Pet: setSleepingState()', () => {
+  it('should set sleeping state', () => {
+    const pet = new Pet();
+    pet.state = 'awake';
+
+    pet.setSleepingState();
+
+    expect(pet.state).toEqual('sleeping');
+  });
+});
+
+describe('Pet: triggerHungerCycles()', () => {
+  beforeEach(() => {
+    jest.useFakeTimers();
+    triggerHunger.mockReturnValue(timer(100));
+  });
+
+  it('should decrease hunger meter by 2', () => {
+    const pet = new Pet();
+
+    pet.triggerHungerCycles();
+    jest.runOnlyPendingTimers();
+
+    expect(pet.lifeMeter.hunger).toEqual(3);
+  });
+
+  it('should not decrease hunger meter by 2 if asleep', () => {
+    const pet = new Pet();
+    pet.state = 'sleeping';
+
+    pet.triggerHungerCycles();
+    jest.runOnlyPendingTimers();
+
+    expect(pet.lifeMeter.hunger).toEqual(5);
+  });
+
+  it('should display hunger message if hungry', () => {
+    const pet = new Pet();
+    pet.lifeMeter.hunger = 1;
+
+    pet.triggerHungerCycles();
+    jest.runOnlyPendingTimers();
+
+    expect(displayMessage).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('Pet: isAwake()', () => {
+  it('should return hungry if lifeMeter.hunger <= 2', () => {
+    const pet = new Pet();
+
+    expect(pet.isAwake()).toBeTruthy();
+  });
+});
+
+describe('Pet: isHungry()', () => {
+  it('should return hungry if lifeMeter.hunger <= 2', () => {
+    const pet = new Pet();
+    pet.lifeMeter.hunger = 2;
+
+    expect(pet.isHungry).toBeTruthy();
+  });
+});
+
+describe('Pet: decreaseHungerMeter()', () => {
+  it('should decrease hunger meter by 2', () => {
+    const pet = new Pet();
+
+    pet.decreaseHungerMeter();
+
+    expect(pet.lifeMeter.hunger).toEqual(3);
   });
 });

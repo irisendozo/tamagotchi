@@ -2,7 +2,7 @@ const {
   askQuestion, displayMessage,
 } = require('./utils/console');
 const {
-  triggerMorning,
+  triggerMorning, triggerNight, triggerHunger,
 } = require('./utils/time');
 const { ANIMALS, GENDERS } = require('./constants');
 
@@ -19,10 +19,11 @@ class Pet {
     this.animal = selectAnimal();
     this.gender = selectGender();
     this.age = 1;
+    this.state = 'awake';
     this.lifeMeter = {
-      hunger: 100,
-      health: 100,
-      happiness: 100,
+      hunger: 5,
+      health: 5,
+      happiness: 5,
     };
   }
 
@@ -48,6 +49,8 @@ class Pet {
     this.displayStatus();
 
     this.triggerWakeUpHabit();
+    this.triggerSleepingHabit();
+    this.triggerHungerCycles();
   }
 
   /**
@@ -81,17 +84,28 @@ class Pet {
   /**
    * Triggers waking up habit:
    *  - display waking up message
+   *  - set state to awake
    *  - increase pet age
    * and is triggered by pet's concept of morning = time when pet first woke up + LIFECYCLEMS
    *
    * @memberof Pet
    */
   triggerWakeUpHabit() {
-    return triggerMorning().subscribe(() => {
+    triggerMorning().subscribe(() => {
       displayMessage(`Just woke up *${this.animal.sound}*, what a beautiful day!`);
       this.displayStatus();
+      this.setWakeUpState();
       this.increaseAge();
     });
+  }
+
+  /**
+   * Sets pet state to 'awake'
+   *
+   * @memberof Pet
+   */
+  setWakeUpState() {
+    this.state = 'awake';
   }
 
   /**
@@ -101,6 +115,79 @@ class Pet {
    */
   increaseAge() {
     this.age += 1;
+  }
+
+  /**
+   * Triggers sleeping habit:
+   *  - display sleeping message
+   *  - set state to asleep
+   * and is triggered by pet's concept of night = time when pet first woke up + 2.3 * LIFECYCLEMS
+   *
+   * @memberof Pet
+   */
+  triggerSleepingHabit() {
+    triggerNight().subscribe(() => {
+      displayMessage(`Sleepy sleepy *${this.animal.sound}*, going to sleep now!`);
+      this.setSleepingState();
+    });
+  }
+
+  /**
+   * Sets pet state to 'sleeping'
+   *
+   * @memberof Pet
+   */
+  setSleepingState() {
+    this.state = 'sleeping';
+  }
+
+  /**
+   * Triggers hungry habit if pet is awake:
+   *  - display hungry message if hungry
+   *  - decrease hunger meter
+   * and is triggered by pet's concept of hunger = LIFECYCLEMS / 5
+   *
+   * @memberof Pet
+   */
+  triggerHungerCycles() {
+    triggerHunger().subscribe(() => {
+      if (this.isAwake()) {
+        if (this.isHungry()) {
+          displayMessage(`I'm hungry *${this.animal.sound}*! FEED ME NOW!`);
+        }
+
+        this.decreaseHungerMeter();
+      }
+    });
+  }
+
+  /**
+   * States if pet is awake or not
+   *
+   * @returns {Boolean} Boolean true if awake, false if not
+   * @memberof Pet
+   */
+  isAwake() {
+    return this.state === 'awake';
+  }
+
+  /**
+   * States if pet is hungry or not, pet is hungry if lifeMeter.hunger <= 2
+   *
+   * @returns {Boolean} Boolean true if hungry, false if not
+   * @memberof Pet
+   */
+  isHungry() {
+    return this.lifeMeter.hunger <= 2;
+  }
+
+  /**
+   * Decreases hunger meter by 2
+   *
+   * @memberof Pet
+   */
+  decreaseHungerMeter() {
+    this.lifeMeter.hunger -= 2;
   }
 }
 

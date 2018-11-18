@@ -1,6 +1,6 @@
 // Pet life cycle in milliseconds
 // The pet ages every increase in life cycle
-const LIFECYCLEMS = 32400000;
+const LIFECYCLEMS = 1000;
 
 // Pet store name
 const PETSTORE = 'The Zodiac';
