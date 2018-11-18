@@ -2,9 +2,9 @@ const System = require('./system');
 
 const initialize = async () => {
   const system = new System();
-  const { pet } = await system.createHumanAndPet();
+  const { pet, lifemeter } = await system.createHumanPetAndLifemeter();
 
-  pet.startLife();
+  pet.startLife(lifemeter);
 };
 
 module.exports = {

@@ -5,7 +5,7 @@ const {
   triggerMorning, triggerNight, triggerHunger, triggerPlay,
 } = require('./utils/time');
 const {
-  ANIMALS, GENDERS, LIFEMETERMAX, LIFEMETERMIN,
+  ANIMALS, GENDERS, WASTEMAX,
 } = require('./constants');
 
 const selectAnimal = () => ANIMALS[Math.floor(Math.random() * (ANIMALS.length - 1))];
@@ -23,11 +23,6 @@ class Pet {
     this.age = 1;
     this.state = 'awake';
     this.waste = 0;
-    this.lifeMeter = {
-      hunger: LIFEMETERMAX,
-      health: LIFEMETERMAX,
-      happiness: LIFEMETERMAX,
-    };
   }
 
   /**
@@ -47,7 +42,9 @@ class Pet {
    *
    * @memberof Pet
    */
-  async startLife() {
+  async startLife(lifemeter) {
+    this.lifemeter = lifemeter;
+
     this.name = await this.askName();
     this.displayStatus();
 
@@ -76,9 +73,9 @@ class Pet {
     displayMessage(`This is my status for today:
 
     Age: ${this.age} cycle old
-    Happiness: ${this.lifeMeter.happiness}
-    Hunger: ${this.lifeMeter.hunger}
-    Health: ${this.lifeMeter.health}`);
+    Happiness: ${this.lifemeter.getHappiness()}
+    Hunger: ${this.lifemeter.getHunger()}
+    Health: ${this.lifemeter.getHealth()}`);
   }
 
   /**
@@ -128,7 +125,7 @@ class Pet {
 
   /**
    * Triggers hungry habit if pet is awake:
-   *  - display hungry message if hungry
+   *  - display hungry message if isHungry event is triggered
    *  - decrease hunger meter
    * and is triggered by pet's concept of hunger = LIFECYCLEMS / 5
    *
@@ -137,21 +134,15 @@ class Pet {
   triggerHungerCycles() {
     triggerHunger().subscribe(() => {
       if (this.isAwake()) {
-        if (this.isHungry()) {
-          displayMessage(`I'm hungry *${this.animal.sound}*! FEED ME NOW!`);
-        }
-
-        this.decreaseHungerMeter();
+        this.lifemeter.decreaseHunger();
       }
     });
-  }
 
-  isHungry() {
-    return this.lifeMeter.hunger <= LIFEMETERMIN;
-  }
-
-  decreaseHungerMeter() {
-    this.lifeMeter.hunger -= 1;
+    this.lifemeter.isHungry.subscribe(() => {
+      if (this.isAwake()) {
+        displayMessage(`I'm hungry *${this.animal.sound}*! FEED ME NOW!`);
+      }
+    });
   }
 
   /**
@@ -167,7 +158,7 @@ class Pet {
       if (this.isAwake()) {
         if (this.isWasteFull()) {
           displayMessage(`Yuck *${this.animal.sound}*! So dirty, I'm not going to leave waste anymore!`);
-          this.decreaseHealth();
+          this.lifemeter.decreaseHealth();
         } else {
           this.increaseWaste();
         }
@@ -180,11 +171,7 @@ class Pet {
   }
 
   isWasteFull() {
-    return this.waste >= LIFEMETERMAX;
-  }
-
-  decreaseHealth() {
-    this.lifeMeter.health -= 1;
+    return this.waste >= WASTEMAX;
   }
 
   increaseWaste() {
@@ -203,13 +190,9 @@ class Pet {
     triggerPlay().subscribe(() => {
       if (this.isAwake()) {
         displayMessage(`C'mon let's play *${this.animal.sound}*! You've been so busy!`);
-        this.decreaseHappiness();
+        this.lifemeter.decreaseHappiness();
       }
     });
-  }
-
-  decreaseHappiness() {
-    this.lifeMeter.happiness -= 1;
   }
 }
 

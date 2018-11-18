@@ -11,6 +11,15 @@ describe('Lifemeter: initialize()', () => {
   });
 });
 
+describe('Lifemeter: getHunger()', () => {
+  it('should return current hunger stat', () => {
+    const lifemeter = new Lifemeter();
+    lifemeter.hunger = 4;
+
+    expect(lifemeter.getHunger()).toEqual(4);
+  });
+});
+
 describe('Lifemeter: increaseHunger()', () => {
   it('should increase hunger by 1', () => {
     const lifemeter = new Lifemeter();
@@ -70,6 +79,15 @@ describe('Lifemeter: decreaseHunger()', () => {
   });
 });
 
+describe('Lifemeter: getHealth()', () => {
+  it('should return current health stat', () => {
+    const lifemeter = new Lifemeter();
+    lifemeter.health = 4;
+
+    expect(lifemeter.getHealth()).toEqual(4);
+  });
+});
+
 describe('Lifemeter: increaseHealth()', () => {
   it('should increase health by 1', () => {
     const lifemeter = new Lifemeter();
@@ -126,6 +144,15 @@ describe('Lifemeter: decreaseHealth()', () => {
     lifemeter.decreaseHealth();
 
     expect(lifemeter.health).toEqual(0);
+  });
+});
+
+describe('Lifemeter: getHappiness()', () => {
+  it('should return current happiness stat', () => {
+    const lifemeter = new Lifemeter();
+    lifemeter.happiness = 4;
+
+    expect(lifemeter.getHappiness()).toEqual(4);
   });
 });
 

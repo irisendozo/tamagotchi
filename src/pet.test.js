@@ -1,12 +1,13 @@
-const { timer } = require('rxjs');
+const { timer, Subject } = require('rxjs');
 
-const { LIFEMETERMAX, LIFEMETERMIN } = require('./constants');
+const { WASTEMAX } = require('./constants');
 const {
   askQuestion, displayMessage,
 } = require('./utils/console');
 const {
   triggerMorning, triggerNight, triggerHunger, triggerWaste, triggerPlay,
 } = require('./utils/time');
+const Lifemeter = require('./lifemeter');
 const Pet = require('./pet');
 
 jest.mock('./utils/console', () => ({
@@ -21,21 +22,22 @@ jest.mock('./utils/time', () => ({
   triggerWaste: jest.fn(),
   triggerPlay: jest.fn(),
 }));
+jest.mock('./lifemeter');
+
+beforeEach(() => {
+  Lifemeter.mockClear();
+});
 
 describe('Pet: initialize()', () => {
   it('should initialize pet stats and props', () => {
     const pet = new Pet();
+    pet.lifemeter = new Lifemeter();
 
     expect(pet.animal.type).toEqual(expect.any(String));
     expect(pet.animal.sound).toEqual(expect.any(String));
     expect(pet.gender).toEqual(expect.any(String));
     expect(pet.age).toEqual(1);
     expect(pet.state).toEqual('awake');
-    expect(pet.lifeMeter).toMatchObject({
-      hunger: LIFEMETERMAX,
-      health: LIFEMETERMAX,
-      happiness: LIFEMETERMAX,
-    });
   });
 });
 
@@ -44,6 +46,7 @@ describe('Pet: hatchingEgg()', () => {
 
   it('should call settimeout with 2sec delay', async () => {
     const pet = new Pet();
+    pet.lifemeter = new Lifemeter();
 
     pet.hatchingEgg();
     jest.advanceTimersByTime(2000);
@@ -53,7 +56,6 @@ describe('Pet: hatchingEgg()', () => {
   });
 });
 
-
 describe('Pet: askName()', () => {
   beforeEach(() => {
     askQuestion.mockReturnValue(new Promise(resolve => resolve({ name: 'mockPetName' })));
@@ -61,6 +63,7 @@ describe('Pet: askName()', () => {
 
   it('should return name from prompt + display messages', async () => {
     const pet = new Pet();
+    pet.lifemeter = new Lifemeter();
 
     const name = await pet.askName();
 
@@ -70,12 +73,18 @@ describe('Pet: askName()', () => {
 });
 
 describe('Pet: displayStatus()', () => {
+  beforeEach(() => {
+    Lifemeter.mockImplementation(() => ({
+      getHunger: jest.fn().mockReturnValue(5),
+      getHealth: jest.fn().mockReturnValue(5),
+      getHappiness: jest.fn().mockReturnValue(5),
+    }));
+  });
+
   it('should display current pet status', () => {
     const pet = new Pet();
+    pet.lifemeter = new Lifemeter();
     pet.age = 1;
-    pet.lifeMeter.happiness = 5;
-    pet.lifeMeter.hunger = 5;
-    pet.lifeMeter.health = 5;
 
     pet.displayStatus();
 
@@ -96,6 +105,7 @@ describe('Pet: triggerWakeUpCycles()', () => {
 
   it('should display wake up message + status', () => {
     const pet = new Pet();
+    pet.lifemeter = new Lifemeter();
 
     pet.triggerWakeUpCycles();
     jest.runOnlyPendingTimers();
@@ -105,6 +115,7 @@ describe('Pet: triggerWakeUpCycles()', () => {
 
   it('should increase age', () => {
     const pet = new Pet();
+    pet.lifemeter = new Lifemeter();
     pet.age = 1;
 
     pet.triggerWakeUpCycles();
@@ -115,6 +126,7 @@ describe('Pet: triggerWakeUpCycles()', () => {
 
   it('should set state to awake', () => {
     const pet = new Pet();
+    pet.lifemeter = new Lifemeter();
     pet.state = 'sleeping';
 
     pet.triggerWakeUpCycles();
@@ -127,6 +139,7 @@ describe('Pet: triggerWakeUpCycles()', () => {
 describe('Pet: setWakeUpState()', () => {
   it('should set wake up state', () => {
     const pet = new Pet();
+    pet.lifemeter = new Lifemeter();
     pet.state = 'sleeping';
 
     pet.setWakeUpState();
@@ -138,6 +151,7 @@ describe('Pet: setWakeUpState()', () => {
 describe('Pet: increaseAge()', () => {
   it('should increase age of pet by 1', () => {
     const pet = new Pet();
+    pet.lifemeter = new Lifemeter();
     pet.age = 1;
 
     pet.increaseAge();
@@ -154,6 +168,7 @@ describe('Pet: triggerSleepingCycles()', () => {
 
   it('should display sleeping message', () => {
     const pet = new Pet();
+    pet.lifemeter = new Lifemeter();
 
     pet.triggerSleepingCycles();
     jest.runOnlyPendingTimers();
@@ -163,6 +178,7 @@ describe('Pet: triggerSleepingCycles()', () => {
 
   it('should set state to sleeping', () => {
     const pet = new Pet();
+    pet.lifemeter = new Lifemeter();
     pet.state = 'awake';
 
     pet.triggerSleepingCycles();
@@ -175,6 +191,7 @@ describe('Pet: triggerSleepingCycles()', () => {
 describe('Pet: setSleepingState()', () => {
   it('should set sleeping state', () => {
     const pet = new Pet();
+    pet.lifemeter = new Lifemeter();
     pet.state = 'awake';
 
     pet.setSleepingState();
@@ -187,44 +204,51 @@ describe('Pet: triggerHungerCycles()', () => {
   beforeEach(() => {
     jest.useFakeTimers();
     triggerHunger.mockReturnValue(timer(100));
+
+    Lifemeter.mockImplementation(() => ({
+      decreaseHunger: jest.fn(),
+      isHungry: new Subject(),
+    }));
   });
 
   it('should decrease hunger meter by 1', () => {
     const pet = new Pet();
-    pet.lifeMeter.hunger = 5;
+    pet.lifemeter = new Lifemeter();
+    pet.state = 'awake';
 
     pet.triggerHungerCycles();
     jest.runOnlyPendingTimers();
 
-    expect(pet.lifeMeter.hunger).toEqual(4);
+    expect(pet.lifemeter.decreaseHunger).toHaveBeenCalledTimes(1);
+  });
+
+  it('should display message if hungry', () => {
+    const pet = new Pet();
+    pet.lifemeter = new Lifemeter();
+    pet.state = 'awake';
+
+    pet.triggerHungerCycles();
+    pet.lifemeter.isHungry.next(true);
+
+    expect(displayMessage).toHaveBeenCalledTimes(1);
   });
 
   it('should not decrease hunger meter by 1 if asleep', () => {
     const pet = new Pet();
-    pet.lifeMeter.hunger = 5;
+    pet.lifemeter = new Lifemeter();
     pet.state = 'sleeping';
 
     pet.triggerHungerCycles();
     jest.runOnlyPendingTimers();
 
-    expect(pet.lifeMeter.hunger).toEqual(5);
-  });
-
-  it('should display hunger message if hungry', () => {
-    const pet = new Pet();
-    pet.lifeMeter.hunger = 5;
-    pet.lifeMeter.hunger = 1;
-
-    pet.triggerHungerCycles();
-    jest.runOnlyPendingTimers();
-
-    expect(displayMessage).toHaveBeenCalledTimes(1);
+    expect(pet.lifemeter.decreaseHunger).not.toHaveBeenCalled();
   });
 });
 
 describe('Pet: isAwake()', () => {
   it('should return true if state is awake', () => {
     const pet = new Pet();
+    pet.lifemeter = new Lifemeter();
     pet.state = 'awake';
 
     expect(pet.isAwake()).toBeTruthy();
@@ -232,36 +256,10 @@ describe('Pet: isAwake()', () => {
 
   it('should return false if state is sleeping', () => {
     const pet = new Pet();
+    pet.lifemeter = new Lifemeter();
     pet.state = 'sleeping';
 
     expect(pet.isAwake()).toBeFalsy();
-  });
-});
-
-describe('Pet: isHungry()', () => {
-  it('should return hungry if lifeMeter.hunger <= LIFEMETERMIN', () => {
-    const pet = new Pet();
-    pet.lifeMeter.hunger = LIFEMETERMIN;
-
-    expect(pet.isHungry()).toBeTruthy();
-  });
-
-  it('should return not hungry if lifeMeter.hunger <= LIFEMETERMIN', () => {
-    const pet = new Pet();
-    pet.lifeMeter.hunger = LIFEMETERMIN + 1;
-
-    expect(pet.isHungry()).toBeFalsy();
-  });
-});
-
-describe('Pet: decreaseHungerMeter()', () => {
-  it('should decrease hunger meter by 1', () => {
-    const pet = new Pet();
-    pet.lifeMeter.hunger = 5;
-
-    pet.decreaseHungerMeter();
-
-    expect(pet.lifeMeter.hunger).toEqual(4);
   });
 });
 
@@ -269,10 +267,15 @@ describe('Pet: triggerWasteCycles()', () => {
   beforeEach(() => {
     jest.useFakeTimers();
     triggerWaste.mockReturnValue(timer(100));
+
+    Lifemeter.mockImplementation(() => ({
+      decreaseHealth: jest.fn(),
+    }));
   });
 
   it('should increase waste by 1 if waste is not full and awake', () => {
     const pet = new Pet();
+    pet.lifemeter = new Lifemeter();
     pet.state = 'awake';
     pet.waste = 0;
 
@@ -284,25 +287,26 @@ describe('Pet: triggerWasteCycles()', () => {
 
   it('should not increase waste by 1 if waste is full', () => {
     const pet = new Pet();
+    pet.lifemeter = new Lifemeter();
     pet.state = 'awake';
-    pet.waste = 5;
+    pet.waste = WASTEMAX;
 
     pet.triggerWasteCycles();
     jest.runOnlyPendingTimers();
 
-    expect(pet.waste).toEqual(5);
+    expect(pet.waste).toEqual(WASTEMAX);
   });
 
   it('should decrease health if waste is full + display message', () => {
     const pet = new Pet();
+    pet.lifemeter = new Lifemeter();
     pet.state = 'awake';
-    pet.waste = 5;
-    pet.lifeMeter.health = 5;
+    pet.waste = WASTEMAX;
 
     pet.triggerWasteCycles();
     jest.runOnlyPendingTimers();
 
-    expect(pet.lifeMeter.health).toEqual(4);
+    expect(pet.lifemeter.decreaseHealth).toHaveBeenCalledTimes(1);
     expect(displayMessage).toHaveBeenCalledTimes(1);
   });
 });
@@ -310,33 +314,25 @@ describe('Pet: triggerWasteCycles()', () => {
 describe('Pet: isWasteFull()', () => {
   it('should return true if waste is full', () => {
     const pet = new Pet();
-    pet.waste = LIFEMETERMAX;
+    pet.lifemeter = new Lifemeter();
+    pet.waste = WASTEMAX;
 
     expect(pet.isWasteFull()).toBeTruthy();
   });
 
   it('should return false if waste is not full', () => {
     const pet = new Pet();
-    pet.waste = LIFEMETERMAX - 1;
+    pet.lifemeter = new Lifemeter();
+    pet.waste = WASTEMAX - 1;
 
     expect(pet.isWasteFull()).toBeFalsy();
-  });
-});
-
-describe('Pet: decreaseHealth()', () => {
-  it('should decrease health by 1', () => {
-    const pet = new Pet();
-    pet.lifeMeter.health = 5;
-
-    pet.decreaseHealth();
-
-    expect(pet.lifeMeter.health).toEqual(4);
   });
 });
 
 describe('Pet: increaseWaste()', () => {
   it('should increase waste by 1', () => {
     const pet = new Pet();
+    pet.lifemeter = new Lifemeter();
     pet.waste = 0;
 
     pet.increaseWaste();
@@ -349,38 +345,32 @@ describe('Pet: triggerPlayCycles()', () => {
   beforeEach(() => {
     jest.useFakeTimers();
     triggerPlay.mockReturnValue(timer(100));
+
+    Lifemeter.mockImplementation(() => ({
+      decreaseHappiness: jest.fn(),
+    }));
   });
 
   it('should decrease happiness by 1 if awake + display message', () => {
     const pet = new Pet();
+    pet.lifemeter = new Lifemeter();
     pet.state = 'awake';
-    pet.lifeMeter.happiness = 5;
 
     pet.triggerPlayCycles();
     jest.runOnlyPendingTimers();
 
-    expect(pet.lifeMeter.happiness).toEqual(4);
+    expect(pet.lifemeter.decreaseHappiness).toHaveBeenCalledTimes(1);
+    expect(displayMessage).toHaveBeenCalledTimes(1);
   });
 
   it('should not decrease happiness by if asleep', () => {
     const pet = new Pet();
+    pet.lifemeter = new Lifemeter();
     pet.state = 'sleeping';
-    pet.lifeMeter.happiness = 5;
 
     pet.triggerPlayCycles();
     jest.runOnlyPendingTimers();
 
-    expect(pet.lifeMeter.happiness).toEqual(5);
-  });
-});
-
-describe('Pet: decreaseHappiness()', () => {
-  it('should decrease happiness by 1', () => {
-    const pet = new Pet();
-    pet.lifeMeter.happiness = 5;
-
-    pet.decreaseHappiness();
-
-    expect(pet.lifeMeter.happiness).toEqual(4);
+    expect(pet.lifemeter.decreaseHappiness).not.toHaveBeenCalled();
   });
 });

@@ -19,84 +19,81 @@ class Lifemeter {
     this.isSad = new Subject();
   }
 
-  /**
-   * Increment hunger by 1 if less than life meter max threshold
-   *
-   * @memberof Lifemeter
-   */
+  getHunger() {
+    return this.getStat('hunger');
+  }
+
   increaseHunger() {
-    if (this.hunger < LIFEMETERMAX) {
-      this.hunger += 1;
-    }
+    this.increaseStat('hunger');
   }
 
-  /**
-   * Decrements hunger by 1 if != 0 and triggers isDead if 0
-   *
-   * @memberof Lifemeter
-   */
   decreaseHunger() {
-    if (this.hunger === 0) {
-      this.isDead.next(true);
-    } else if (this.hunger < LIFEMETERMIN) {
-      this.isHungry.next(true);
-      this.hunger -= 1;
-    } else {
-      this.hunger -= 1;
-    }
+    this.decreaseStat('hunger', 'isHungry');
   }
 
-  /**
-   * Increment health by 1 if less than life meter max threshold
-   *
-   * @memberof Lifemeter
-   */
+  getHealth() {
+    return this.getStat('health');
+  }
+
   increaseHealth() {
-    if (this.health < LIFEMETERMAX) {
-      this.health += 1;
-    }
+    this.increaseStat('health');
   }
 
-  /**
-   * Decrements health by 1 if != 0 and triggers isDead if 0
-   *
-   * @memberof Lifemeter
-   */
   decreaseHealth() {
-    if (this.health === 0) {
-      this.isDead.next(true);
-    } else if (this.health < LIFEMETERMIN) {
-      this.isSick.next(true);
-      this.health -= 1;
-    } else {
-      this.health -= 1;
-    }
+    this.decreaseStat('health', 'isSick');
   }
 
-  /**
-   * Increment happiness by 1 if less than life meter max threshold
-   *
-   * @memberof Lifemeter
-   */
+  getHappiness() {
+    return this.getStat('happiness');
+  }
+
   increaseHappiness() {
-    if (this.happiness < LIFEMETERMAX) {
-      this.happiness += 1;
+    this.increaseStat('happiness');
+  }
+
+  decreaseHappiness() {
+    this.decreaseStat('happiness', 'isSad');
+  }
+
+  /**
+   * Get status
+   *
+   * @param {string} stat
+   * @returns {Number} Number corresponding to stat
+   * @memberof Lifemeter
+   */
+  getStat(stat) {
+    return this[stat];
+  }
+
+  /**
+   * Increment stat by 1 if less than life meter max threshold
+   *
+   * @param {string} stat
+   * @memberof Lifemeter
+   */
+  increaseStat(stat) {
+    if (this[stat] < LIFEMETERMAX) {
+      this[stat] += 1;
     }
   }
 
   /**
-   * Decrements happiness by 1 if != 0 and triggers isDead if 0
+   * Decrement stat by 1 if less than life meter max threshold or
+   * emit isHungry < LIFEMETERMIN + isDead = 0 events
    *
+   * @param {string} stat
+   * @param {string} warningSubject specific subject to warn when < LIFEMETERMIN
    * @memberof Lifemeter
    */
-  decreaseHappiness() {
-    if (this.happiness === 0) {
+  decreaseStat(stat, warningSubject) {
+    if (this[stat] === 0) {
       this.isDead.next(true);
-    } else if (this.happiness < LIFEMETERMIN) {
-      this.isSad.next(true);
-      this.happiness -= 1;
+    } else if (this[stat] < LIFEMETERMIN) {
+      this[warningSubject].next(true);
+      this[stat] -= 1;
     } else {
-      this.happiness -= 1;
+      this[stat] -= 1;
     }
   }
 }
