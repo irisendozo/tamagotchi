@@ -69,11 +69,6 @@ class Pet {
     return name;
   }
 
-  /**
-   * Displays current status of pet on command line
-   *
-   * @memberof Pet
-   */
   displayStatus() {
     displayMessage(`This is my status for today:
 
@@ -101,20 +96,10 @@ class Pet {
     });
   }
 
-  /**
-   * Sets pet state to 'awake'
-   *
-   * @memberof Pet
-   */
   setWakeUpState() {
     this.state = 'awake';
   }
 
-  /**
-   * Increases current age of pet by 1
-   *
-   * @memberof Pet
-   */
   increaseAge() {
     this.age += 1;
   }
@@ -134,11 +119,6 @@ class Pet {
     });
   }
 
-  /**
-   * Sets pet state to 'sleeping'
-   *
-   * @memberof Pet
-   */
   setSleepingState() {
     this.state = 'sleeping';
   }
@@ -163,31 +143,14 @@ class Pet {
     });
   }
 
-  /**
-   * States if pet is awake or not
-   *
-   * @returns {Boolean} Boolean true if awake, false if not
-   * @memberof Pet
-   */
   isAwake() {
     return this.state === 'awake';
   }
 
-  /**
-   * States if pet is hungry or not, pet is hungry if lifeMeter.hunger <= 2
-   *
-   * @returns {Boolean} Boolean true if hungry, false if not
-   * @memberof Pet
-   */
   isHungry() {
     return this.lifeMeter.hunger <= 2;
   }
 
-  /**
-   * Decreases hunger meter by 2
-   *
-   * @memberof Pet
-   */
   decreaseHungerMeter() {
     this.lifeMeter.hunger -= 2;
   }
@@ -213,30 +176,14 @@ class Pet {
     });
   }
 
-  /**
-   * States if waste is full or not, full if waste > 10
-   *
-   * @returns {Boolean} Boolean true if waste is full, false if not
-   * @memberof Pet
-   */
   isWasteFull() {
     return this.waste >= 10;
   }
 
-  /**
-   * Decreases health by 2
-   *
-   * @memberof Pet
-   */
   decreaseHealth() {
     this.lifeMeter.health -= 2;
   }
 
-  /**
-   * Increases waste by 1
-   *
-   * @memberof Pet
-   */
   increaseWaste() {
     this.waste += 1;
   }
