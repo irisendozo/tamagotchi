@@ -20,6 +20,7 @@ class Pet {
     this.gender = selectGender();
     this.age = 1;
     this.state = 'awake';
+    this.waste = 0;
     this.lifeMeter = {
       hunger: 5,
       health: 5,
@@ -51,6 +52,7 @@ class Pet {
     this.triggerWakeUpHabit();
     this.triggerSleepingHabit();
     this.triggerHungerCycles();
+    this.triggerWasteCycles();
   }
 
   /**
@@ -188,6 +190,55 @@ class Pet {
    */
   decreaseHungerMeter() {
     this.lifeMeter.hunger -= 2;
+  }
+
+  /**
+   * Triggers waste habit if pet is awake:
+   *  - display hungry message if hungry
+   *  - decrease hunger meter
+   * and is triggered by pet's concept of hunger = LIFECYCLEMS / 5
+   *
+   * @memberof Pet
+   */
+  triggerWasteCycles() {
+    triggerHunger().subscribe(() => {
+      if (this.isAwake()) {
+        if (this.isWasteFull()) {
+          displayMessage(`Yuck *${this.animal.sound}*! So dirty, I'm not going to leave waste anymore!`);
+          this.decreaseHealth();
+        } else {
+          this.increaseWaste();
+        }
+      }
+    });
+  }
+
+  /**
+   * States if waste is full or not, full if waste > 10
+   *
+   * @returns {Boolean} Boolean true if waste is full, false if not
+   * @memberof Pet
+   */
+  isWasteFull() {
+    return this.waste >= 10;
+  }
+
+  /**
+   * Decreases health by 2
+   *
+   * @memberof Pet
+   */
+  decreaseHealth() {
+    this.lifeMeter.health -= 2;
+  }
+
+  /**
+   * Increases waste by 1
+   *
+   * @memberof Pet
+   */
+  increaseWaste() {
+    this.waste += 1;
   }
 }
 

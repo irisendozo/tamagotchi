@@ -1,5 +1,7 @@
 const { LIFECYCLEMS } = require('../constants');
-const { triggerMorning, triggerNight, triggerHunger } = require('./time');
+const {
+  triggerMorning, triggerNight, triggerHunger, triggerWaste,
+} = require('./time');
 
 beforeEach(() => jest.useFakeTimers());
 
@@ -83,6 +85,30 @@ describe('time: triggerHunger())', () => {
     });
 
     jest.advanceTimersByTime(LIFECYCLEMS / 5);
+
+    expect(triggered).toBeTruthy();
+  });
+});
+
+describe('time: triggerWaste())', () => {
+  it('should not trigger waste if lifecycle in ms is not completed', async () => {
+    let triggered = false;
+    triggerWaste().subscribe(() => {
+      triggered = true;
+    });
+
+    jest.advanceTimersByTime(LIFECYCLEMS / 12);
+
+    expect(triggered).toBeFalsy();
+  });
+
+  it('should trigger hunger on LIFECYCLEMS / 10', async () => {
+    let triggered = false;
+    triggerWaste().subscribe(() => {
+      triggered = true;
+    });
+
+    jest.advanceTimersByTime(LIFECYCLEMS / 10);
 
     expect(triggered).toBeTruthy();
   });

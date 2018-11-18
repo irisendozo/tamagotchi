@@ -4,7 +4,7 @@ const {
   askQuestion, displayMessage,
 } = require('./utils/console');
 const {
-  triggerMorning, triggerNight, triggerHunger,
+  triggerMorning, triggerNight, triggerHunger, triggerWaste,
 } = require('./utils/time');
 const Pet = require('./pet');
 
@@ -17,6 +17,7 @@ jest.mock('./utils/time', () => ({
   triggerMorning: jest.fn(),
   triggerNight: jest.fn(),
   triggerHunger: jest.fn(),
+  triggerWaste: jest.fn(),
 }));
 
 describe('Pet: initialize()', () => {
@@ -211,10 +212,17 @@ describe('Pet: triggerHungerCycles()', () => {
 });
 
 describe('Pet: isAwake()', () => {
-  it('should return hungry if lifeMeter.hunger <= 2', () => {
+  it('should return true if state is awake', () => {
     const pet = new Pet();
 
     expect(pet.isAwake()).toBeTruthy();
+  });
+
+  it('should return false if state is sleeping', () => {
+    const pet = new Pet();
+    pet.state = 'sleeping';
+
+    expect(pet.isAwake()).toBeFalsy();
   });
 });
 
@@ -223,7 +231,14 @@ describe('Pet: isHungry()', () => {
     const pet = new Pet();
     pet.lifeMeter.hunger = 2;
 
-    expect(pet.isHungry).toBeTruthy();
+    expect(pet.isHungry()).toBeTruthy();
+  });
+
+  it('should return not hungry if lifeMeter.hunger <= 2', () => {
+    const pet = new Pet();
+    pet.lifeMeter.hunger = 5;
+
+    expect(pet.isHungry()).toBeFalsy();
   });
 });
 
@@ -234,5 +249,84 @@ describe('Pet: decreaseHungerMeter()', () => {
     pet.decreaseHungerMeter();
 
     expect(pet.lifeMeter.hunger).toEqual(3);
+  });
+});
+
+describe('Pet: triggerWasteCycles()', () => {
+  beforeEach(() => {
+    jest.useFakeTimers();
+    triggerWaste.mockReturnValue(timer(100));
+  });
+
+  it('should increase waste by 1 if waste is not full and awake', () => {
+    const pet = new Pet();
+    pet.state = 'awake';
+    pet.waste = 0;
+
+    pet.triggerWasteCycles();
+    jest.runOnlyPendingTimers();
+
+    expect(pet.waste).toEqual(1);
+  });
+
+  it('should not increase waste by 1 if waste is full', () => {
+    const pet = new Pet();
+    pet.state = 'awake';
+    pet.waste = 10;
+
+    pet.triggerWasteCycles();
+    jest.runOnlyPendingTimers();
+
+    expect(pet.waste).toEqual(10);
+  });
+
+  it('should decrease health if waste is full + display message', () => {
+    const pet = new Pet();
+    pet.state = 'awake';
+    pet.waste = 10;
+    pet.lifeMeter.health = 5;
+
+    pet.triggerWasteCycles();
+    jest.runOnlyPendingTimers();
+
+    expect(pet.lifeMeter.health).toEqual(3);
+    expect(displayMessage).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('Pet: isWasteFull()', () => {
+  it('should return true if waste is full', () => {
+    const pet = new Pet();
+    pet.waste = 10;
+
+    expect(pet.isWasteFull()).toBeTruthy();
+  });
+
+  it('should return false if waste is not full', () => {
+    const pet = new Pet();
+    pet.waste = 8;
+
+    expect(pet.isWasteFull()).toBeFalsy();
+  });
+});
+
+describe('Pet: decreaseHealth()', () => {
+  it('should decrease health by 2', () => {
+    const pet = new Pet();
+    pet.lifeMeter.health = 5;
+
+    pet.decreaseHealth();
+
+    expect(pet.lifeMeter.health).toEqual(3);
+  });
+});
+
+describe('Pet: increaseWaste()', () => {
+  it('should increase waste by 1', () => {
+    const pet = new Pet();
+
+    pet.increaseWaste();
+
+    expect(pet.waste).toEqual(1);
   });
 });
