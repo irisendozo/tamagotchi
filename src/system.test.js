@@ -26,7 +26,7 @@ describe('System: initialize()', () => {
   });
 });
 
-describe('System: createHumanAndPet()', () => {
+describe('System: createHumanPetAndLifemeter()', () => {
   beforeEach(() => {
     Pet.mockImplementation(() => ({
       name: 'mockName',
@@ -42,7 +42,7 @@ describe('System: createHumanAndPet()', () => {
   it('should display output', async () => {
     const system = new System();
 
-    await system.createHumanAndPet();
+    await system.createHumanPetAndLifemeter();
 
     expect(displayBigMessage).toHaveBeenCalledTimes(1);
     expect(displayMessage).toHaveBeenCalledTimes(2);
@@ -52,17 +52,18 @@ describe('System: createHumanAndPet()', () => {
   it('should call hatching egg', async () => {
     const system = new System();
 
-    const { pet } = await system.createHumanAndPet();
+    const { pet } = await system.createHumanPetAndLifemeter();
 
     expect(pet.hatchingEgg).toHaveBeenCalled();
   });
 
-  it('should return an instantiated pet and human instance', async () => {
+  it('should return an instantiated pet and human and lifemeter instance', async () => {
     const system = new System();
 
-    const { human, pet } = await system.createHumanAndPet();
+    const { human, pet, lifemeter } = await system.createHumanPetAndLifemeter();
 
     expect(human).toHaveProperty('startPetCare');
     expect(pet).toHaveProperty('hatchingEgg');
+    expect(lifemeter).toHaveProperty('happiness');
   });
 });

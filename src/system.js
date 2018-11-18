@@ -5,6 +5,7 @@ const {
 const { PETSTORE } = require('./constants');
 const Pet = require('./pet');
 const Human = require('./human');
+const Lifemeter = require('./lifemeter');
 
 /**
  * Represents system-wide interactions
@@ -22,7 +23,7 @@ class System {
    * @returns {Object} Object with initialized Human and Pet classes
    * @memberof System
    */
-  async createHumanAndPet() {
+  async createHumanPetAndLifemeter() {
     displayBigMessage(`Tamagotchi: ${this.petStoreName}`);
 
     const { playerName } = await askQuestion(`Welcome to ${this.petStoreName} Pet Store. What is your name?`, 'playerName');
@@ -30,11 +31,12 @@ class System {
 
     displayMessage(`Thank you for visiting us, ${human.name}! Your new pet is hatching from it's egg...`);
     const pet = new Pet();
+    const lifemeter = new Lifemeter();
 
     await pet.hatchingEgg();
     displayMessage(`Congratulations, the egg hatched! Your new pet is a ${pet.gender.toUpperCase()} ${pet.animal.type.toUpperCase()}!!!`);
 
-    return { human, pet };
+    return { human, pet, lifemeter };
   }
 }
 
