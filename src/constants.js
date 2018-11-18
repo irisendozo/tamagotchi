@@ -2,6 +2,9 @@
 // The pet ages every increase in life cycle
 const LIFECYCLEMS = 1000;
 
+const LIFEMETERMAX = 5;
+const LIFEMETERMIN = 2;
+
 // Pet store name
 const PETSTORE = 'The Zodiac';
 
@@ -52,6 +55,8 @@ const GENDERS = ['male', 'female'];
 
 module.exports = {
   LIFECYCLEMS,
+  LIFEMETERMAX,
+  LIFEMETERMIN,
   PETSTORE,
   ANIMALS,
   GENDERS,

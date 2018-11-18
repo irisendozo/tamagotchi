@@ -4,7 +4,9 @@ const {
 const {
   triggerMorning, triggerNight, triggerHunger, triggerPlay,
 } = require('./utils/time');
-const { ANIMALS, GENDERS } = require('./constants');
+const {
+  ANIMALS, GENDERS, LIFEMETERMAX, LIFEMETERMIN,
+} = require('./constants');
 
 const selectAnimal = () => ANIMALS[Math.floor(Math.random() * (ANIMALS.length - 1))];
 const selectGender = () => GENDERS[Math.floor(Math.random() * (GENDERS.length - 1))];
@@ -22,9 +24,9 @@ class Pet {
     this.state = 'awake';
     this.waste = 0;
     this.lifeMeter = {
-      hunger: 5,
-      health: 5,
-      happiness: 5,
+      hunger: LIFEMETERMAX,
+      health: LIFEMETERMAX,
+      happiness: LIFEMETERMAX,
     };
   }
 
@@ -145,11 +147,11 @@ class Pet {
   }
 
   isHungry() {
-    return this.lifeMeter.hunger <= 2;
+    return this.lifeMeter.hunger <= LIFEMETERMIN;
   }
 
   decreaseHungerMeter() {
-    this.lifeMeter.hunger -= 2;
+    this.lifeMeter.hunger -= 1;
   }
 
   /**
@@ -178,11 +180,11 @@ class Pet {
   }
 
   isWasteFull() {
-    return this.waste >= 10;
+    return this.waste >= LIFEMETERMAX;
   }
 
   decreaseHealth() {
-    this.lifeMeter.health -= 2;
+    this.lifeMeter.health -= 1;
   }
 
   increaseWaste() {
@@ -207,7 +209,7 @@ class Pet {
   }
 
   decreaseHappiness() {
-    this.lifeMeter.happiness -= 2;
+    this.lifeMeter.happiness -= 1;
   }
 }
 
