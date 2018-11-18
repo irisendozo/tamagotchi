@@ -83,7 +83,7 @@ describe('Pet: displayStatus()', () => {
   });
 });
 
-describe('Pet: triggerWakeUpHabit()', () => {
+describe('Pet: triggerWakeUpCycles()', () => {
   beforeEach(() => {
     jest.useFakeTimers();
     triggerMorning.mockReturnValue(timer(100));
@@ -92,7 +92,7 @@ describe('Pet: triggerWakeUpHabit()', () => {
   it('should display wake up message + status', () => {
     const pet = new Pet();
 
-    pet.triggerWakeUpHabit();
+    pet.triggerWakeUpCycles();
     jest.runOnlyPendingTimers();
 
     expect(displayMessage).toHaveBeenCalledTimes(2);
@@ -101,7 +101,7 @@ describe('Pet: triggerWakeUpHabit()', () => {
   it('should increase age', () => {
     const pet = new Pet();
 
-    pet.triggerWakeUpHabit();
+    pet.triggerWakeUpCycles();
     jest.runOnlyPendingTimers();
 
     expect(pet.age).toEqual(2);
@@ -111,7 +111,7 @@ describe('Pet: triggerWakeUpHabit()', () => {
     const pet = new Pet();
     pet.state = 'sleeping';
 
-    pet.triggerWakeUpHabit();
+    pet.triggerWakeUpCycles();
     jest.runOnlyPendingTimers();
 
     expect(pet.state).toEqual('awake');
@@ -139,7 +139,7 @@ describe('Pet: increaseAge()', () => {
   });
 });
 
-describe('Pet: triggerSleepingHabit()', () => {
+describe('Pet: triggerSleepingCycles()', () => {
   beforeEach(() => {
     jest.useFakeTimers();
     triggerNight.mockReturnValue(timer(100));
@@ -148,7 +148,7 @@ describe('Pet: triggerSleepingHabit()', () => {
   it('should display sleeping message', () => {
     const pet = new Pet();
 
-    pet.triggerSleepingHabit();
+    pet.triggerSleepingCycles();
     jest.runOnlyPendingTimers();
 
     expect(displayMessage).toHaveBeenCalledTimes(1);
@@ -158,7 +158,7 @@ describe('Pet: triggerSleepingHabit()', () => {
     const pet = new Pet();
     pet.state = 'awake';
 
-    pet.triggerSleepingHabit();
+    pet.triggerSleepingCycles();
     jest.runOnlyPendingTimers();
 
     expect(pet.state).toEqual('sleeping');

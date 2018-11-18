@@ -49,8 +49,8 @@ class Pet {
     this.name = await this.askName();
     this.displayStatus();
 
-    this.triggerWakeUpHabit();
-    this.triggerSleepingHabit();
+    this.triggerWakeUpCycles();
+    this.triggerSleepingCycles();
     this.triggerHungerCycles();
     this.triggerWasteCycles();
     this.triggerPlayCycles();
@@ -88,7 +88,7 @@ class Pet {
    *
    * @memberof Pet
    */
-  triggerWakeUpHabit() {
+  triggerWakeUpCycles() {
     triggerMorning().subscribe(() => {
       displayMessage(`Just woke up *${this.animal.sound}*, what a beautiful day!`);
       this.displayStatus();
@@ -113,7 +113,7 @@ class Pet {
    *
    * @memberof Pet
    */
-  triggerSleepingHabit() {
+  triggerSleepingCycles() {
     triggerNight().subscribe(() => {
       displayMessage(`Sleepy sleepy *${this.animal.sound}*, going to sleep now!`);
       this.setSleepingState();
