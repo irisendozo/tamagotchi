@@ -2,9 +2,13 @@
 // The pet ages every increase in life cycle
 const LIFECYCLEMS = 60000;
 
+// Maximum threshold on all life meter stats
 const LIFEMETERMAX = 5;
+// Minimum threshold on all life meter stats
 const LIFEMETERMIN = 2;
+// Maximum threshold on waste, if waste === WASTEMAX, next waste cycle health decreases
 const WASTEMAX = 10;
+// Cycle age when pet will die
 const OLDAGE = 12;
 
 // Pet store name
