@@ -6,6 +6,8 @@ const initialize = async () => {
 
   human.startPetCare(lifemeter);
   pet.startLife(lifemeter);
+
+  system.waitForDeath(lifemeter);
 };
 
 module.exports = {

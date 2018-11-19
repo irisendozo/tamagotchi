@@ -1,3 +1,5 @@
+const { Subject } = require('rxjs');
+
 const { PETSTORE } = require('./constants');
 const {
   askQuestion, displayBigMessage, displayMessage,
@@ -76,5 +78,22 @@ describe('System: createHumanPetAndLifemeter()', () => {
     expect(human).toHaveProperty('startPetCare');
     expect(pet).toHaveProperty('hatchingEgg');
     expect(lifemeter).toHaveProperty('happiness');
+  });
+});
+
+describe('System: waitForDeath()', () => {
+  it('should trigger process exit when lifemeter.isDead is triggered', () => {
+    const realProcess = process;
+    const exitMock = jest.fn();
+    const lifemeterMock = { isDead: new Subject() };
+    const system = new System();
+
+    global.process = { ...realProcess, exit: exitMock };
+
+    system.waitForDeath(lifemeterMock);
+    lifemeterMock.isDead.next(true);
+
+    expect(exitMock).toHaveBeenCalled();
+    global.process = realProcess;
   });
 });

@@ -41,6 +41,14 @@ class System {
 
     return { human, pet, lifemeter };
   }
+
+  // eslint-disable-next-line class-methods-use-this
+  waitForDeath(lifemeter) {
+    lifemeter.isDead.subscribe(() => {
+      displayBigMessage('Your pet died.');
+      process.exit();
+    });
+  }
 }
 
 module.exports = System;

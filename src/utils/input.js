@@ -3,6 +3,11 @@ const readline = require('readline');
 
 const userInput = new Subject();
 
+/**
+ * Read input from command line and trigger an next event to
+ * userInput subject when a space is recognized
+ *
+ */
 const startReadingInput = () => {
   readline.emitKeypressEvents(process.stdin);
   process.stdin.on('keypress', (letter, key) => {
