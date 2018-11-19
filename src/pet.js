@@ -179,6 +179,12 @@ class Pet {
         this.lifemeter.decreaseHappiness();
       }
     });
+
+    this.lifemeter.isSad.subscribe(() => {
+      if (this.isAwake()) {
+        displayMessage(`You don't love me anymore *${this.animal.sound}*...`);
+      }
+    });
   }
 }
 

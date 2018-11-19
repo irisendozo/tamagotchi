@@ -271,6 +271,7 @@ describe('Pet: triggerPlayCycles()', () => {
 
     Lifemeter.mockImplementation(() => ({
       decreaseHappiness: jest.fn(),
+      isSad: new Subject(),
     }));
   });
 
