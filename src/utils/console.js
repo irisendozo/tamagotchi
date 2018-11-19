@@ -51,3 +51,27 @@ module.exports = {
   displayMessage,
   askQuestion,
 };
+
+/**
+ * askMultipleChoice sets console output to display multiple choices from user
+ * and returns the answer as an object with field `answerName`
+ *
+ * @param {string} message question to display
+ * @param {string} answerName field where answer is stored
+ * @param {Array<string>} choices field where choices are stored
+ * @returns {Object} Object with answerName field
+ */
+const askMultipleChoice = async (message, answerName, choices) => inquirer.prompt([{
+  choices,
+  message,
+  name: answerName,
+  type: 'list',
+  validate: input => input && input.length > 0,
+}]);
+
+module.exports = {
+  displayBigMessage,
+  displayMessage,
+  askQuestion,
+  askMultipleChoice,
+};

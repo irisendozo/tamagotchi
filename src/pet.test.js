@@ -10,7 +10,6 @@ const Lifemeter = require('./lifemeter');
 const Pet = require('./pet');
 
 jest.mock('./utils/console', () => ({
-  displayBigMessage: jest.fn(),
   displayMessage: jest.fn(),
   askQuestion: jest.fn(),
 }));
@@ -68,6 +67,16 @@ describe('Pet: askName()', () => {
 
     expect(displayMessage).toHaveBeenCalledTimes(2);
     expect(name).toEqual('mockPetName');
+  });
+});
+
+describe('Pet: setName()', () => {
+  it('should set pet name', async () => {
+    const pet = new Pet();
+
+    pet.setName('Iris');
+
+    expect(pet.name).toEqual('Iris');
   });
 });
 

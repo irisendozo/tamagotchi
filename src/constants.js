@@ -1,6 +1,6 @@
 // Pet life cycle in milliseconds
 // The pet ages every increase in life cycle
-const LIFECYCLEMS = 1000;
+const LIFECYCLEMS = 60000;
 
 const LIFEMETERMAX = 5;
 const LIFEMETERMIN = 2;

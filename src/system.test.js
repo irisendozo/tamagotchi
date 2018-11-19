@@ -35,6 +35,8 @@ describe('System: createHumanPetAndLifemeter()', () => {
       },
       gender: 'female',
       hatchingEgg: jest.fn(() => new Promise(resolve => resolve())),
+      askName: jest.fn(() => new Promise(resolve => resolve())),
+      setName: jest.fn(),
     }));
     askQuestion.mockReturnValue(new Promise(resolve => resolve({ playerName: 'mockName' })));
   });
@@ -55,6 +57,15 @@ describe('System: createHumanPetAndLifemeter()', () => {
     const { pet } = await system.createHumanPetAndLifemeter();
 
     expect(pet.hatchingEgg).toHaveBeenCalled();
+  });
+
+  it('should ask for the petname', async () => {
+    const system = new System();
+
+    const { pet } = await system.createHumanPetAndLifemeter();
+
+    expect(pet.askName).toHaveBeenCalled();
+    expect(pet.setName).toHaveBeenCalled();
   });
 
   it('should return an instantiated pet and human and lifemeter instance', async () => {

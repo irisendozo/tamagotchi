@@ -45,8 +45,8 @@ class Pet {
   async startLife(lifemeter) {
     this.lifemeter = lifemeter;
 
-    this.name = await this.askName();
     this.displayStatus();
+    this.increaseAge();
 
     this.triggerWakeUpCycles();
     this.triggerSleepingCycles();
@@ -67,6 +67,10 @@ class Pet {
     displayMessage(`Okay, you can call me ${name} from now on.`);
 
     return name;
+  }
+
+  setName(name) {
+    this.name = name;
   }
 
   displayStatus() {

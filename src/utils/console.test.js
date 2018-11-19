@@ -2,7 +2,9 @@ const chalk = require('chalk');
 const figlet = require('figlet');
 const inquirer = require('inquirer');
 
-const { displayBigMessage, displayMessage, askQuestion } = require('./console');
+const {
+  displayBigMessage, displayMessage, askQuestion, askMultipleChoice,
+} = require('./console');
 
 jest.mock('chalk', () => ({
   green: jest.fn(),
@@ -42,6 +44,16 @@ describe('console: askQuestion()', () => {
 
     expect(inquirer.prompt).toHaveBeenCalledWith([{
       message: 'mockMessage', name: 'answer', type: 'input', validate: expect.any(Function),
+    }]);
+  });
+});
+
+describe('console: askMultipleChoice()', () => {
+  it('should call inquirer with multiple choice object and return with field answer name', async () => {
+    await askMultipleChoice('mockMessage', 'answer', [1]);
+
+    expect(inquirer.prompt).toHaveBeenCalledWith([{
+      message: 'mockMessage', name: 'answer', type: 'list', choices: [1], validate: expect.any(Function),
     }]);
   });
 });

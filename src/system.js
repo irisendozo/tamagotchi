@@ -36,6 +36,9 @@ class System {
     await pet.hatchingEgg();
     displayMessage(`Congratulations, the egg hatched! Your new pet is a ${pet.gender.toUpperCase()} ${pet.animal.type.toUpperCase()}!!!`);
 
+    const name = await pet.askName();
+    pet.setName(name);
+
     return { human, pet, lifemeter };
   }
 }
