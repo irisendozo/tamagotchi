@@ -1,6 +1,5 @@
 const { timer, Subject } = require('rxjs');
 
-const { WASTEMAX } = require('./constants');
 const {
   askQuestion, displayMessage,
 } = require('./utils/console');
@@ -269,75 +268,20 @@ describe('Pet: triggerWasteCycles()', () => {
     triggerWaste.mockReturnValue(timer(100));
 
     Lifemeter.mockImplementation(() => ({
-      decreaseHealth: jest.fn(),
+      increaseWaste: jest.fn(),
+      isFilthy: new Subject(),
     }));
   });
 
-  it('should increase waste by 1 if waste is not full and awake', () => {
+  it('should increase waste by 1 if awake', () => {
     const pet = new Pet();
     pet.lifemeter = new Lifemeter();
     pet.state = 'awake';
-    pet.waste = 0;
 
     pet.triggerWasteCycles();
     jest.runOnlyPendingTimers();
 
-    expect(pet.waste).toEqual(1);
-  });
-
-  it('should not increase waste by 1 if waste is full', () => {
-    const pet = new Pet();
-    pet.lifemeter = new Lifemeter();
-    pet.state = 'awake';
-    pet.waste = WASTEMAX;
-
-    pet.triggerWasteCycles();
-    jest.runOnlyPendingTimers();
-
-    expect(pet.waste).toEqual(WASTEMAX);
-  });
-
-  it('should decrease health if waste is full + display message', () => {
-    const pet = new Pet();
-    pet.lifemeter = new Lifemeter();
-    pet.state = 'awake';
-    pet.waste = WASTEMAX;
-
-    pet.triggerWasteCycles();
-    jest.runOnlyPendingTimers();
-
-    expect(pet.lifemeter.decreaseHealth).toHaveBeenCalledTimes(1);
-    expect(displayMessage).toHaveBeenCalledTimes(1);
-  });
-});
-
-describe('Pet: isWasteFull()', () => {
-  it('should return true if waste is full', () => {
-    const pet = new Pet();
-    pet.lifemeter = new Lifemeter();
-    pet.waste = WASTEMAX;
-
-    expect(pet.isWasteFull()).toBeTruthy();
-  });
-
-  it('should return false if waste is not full', () => {
-    const pet = new Pet();
-    pet.lifemeter = new Lifemeter();
-    pet.waste = WASTEMAX - 1;
-
-    expect(pet.isWasteFull()).toBeFalsy();
-  });
-});
-
-describe('Pet: increaseWaste()', () => {
-  it('should increase waste by 1', () => {
-    const pet = new Pet();
-    pet.lifemeter = new Lifemeter();
-    pet.waste = 0;
-
-    pet.increaseWaste();
-
-    expect(pet.waste).toEqual(1);
+    expect(pet.lifemeter.increaseWaste).toHaveBeenCalledTimes(1);
   });
 });
 

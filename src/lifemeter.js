@@ -1,6 +1,6 @@
 const { Subject } = require('rxjs');
 
-const { LIFEMETERMAX, LIFEMETERMIN } = require('./constants');
+const { LIFEMETERMAX, LIFEMETERMIN, WASTEMAX } = require('./constants');
 
 /**
  * Represents pet status life meter
@@ -12,10 +12,12 @@ class Lifemeter {
     this.hunger = LIFEMETERMAX;
     this.health = LIFEMETERMAX;
     this.happiness = LIFEMETERMAX;
+    this.waste = 0;
 
     this.isDead = new Subject();
     this.isHungry = new Subject();
     this.isSick = new Subject();
+    this.isFilthy = new Subject();
     this.isSad = new Subject();
   }
 
@@ -53,6 +55,10 @@ class Lifemeter {
 
   decreaseHappiness() {
     this.decreaseStat('happiness', 'isSad');
+  }
+
+  getWaste() {
+    return this.getStat('waste');
   }
 
   /**
@@ -94,6 +100,31 @@ class Lifemeter {
       this[stat] -= 1;
     } else {
       this[stat] -= 1;
+    }
+  }
+
+  /**
+   * Increment waste by 1 if waste >= WASTEMAX, decrement health
+   *
+   * @memberof Lifemeter
+   */
+  increaseWaste() {
+    if (this.waste >= WASTEMAX) {
+      this.decreaseHealth();
+      this.isFilthy.next(true);
+    } else {
+      this.waste += 1;
+    }
+  }
+
+  /**
+   * Decrement waste by 1 if waste > 0
+   *
+   * @memberof Lifemeter
+   */
+  decreaseWaste() {
+    if (this.waste > 0) {
+      this.waste -= 1;
     }
   }
 }

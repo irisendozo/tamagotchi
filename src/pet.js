@@ -2,10 +2,10 @@ const {
   askQuestion, displayMessage,
 } = require('./utils/console');
 const {
-  triggerMorning, triggerNight, triggerHunger, triggerPlay,
+  triggerMorning, triggerNight, triggerHunger, triggerPlay, triggerWaste,
 } = require('./utils/time');
 const {
-  ANIMALS, GENDERS, WASTEMAX,
+  ANIMALS, GENDERS,
 } = require('./constants');
 
 const selectAnimal = () => ANIMALS[Math.floor(Math.random() * (ANIMALS.length - 1))];
@@ -134,6 +134,7 @@ class Pet {
   triggerHungerCycles() {
     triggerHunger().subscribe(() => {
       if (this.isAwake()) {
+        displayMessage(`Wow *${this.animal.sound}*! Starting to get hungry...`);
         this.lifemeter.decreaseHunger();
       }
     });
@@ -147,35 +148,30 @@ class Pet {
 
   /**
    * Triggers waste habit if pet is awake:
-   *  - display hungry message if hungry
-   *  - decrease hunger meter
-   * and is triggered by pet's concept of hunger = LIFECYCLEMS / 5
+   *  - display waste message if filthy
+   *  - increase waste meter
+   * and is triggered by pet's concept of waste = LIFECYCLEMS / 5
    *
    * @memberof Pet
    */
   triggerWasteCycles() {
-    triggerHunger().subscribe(() => {
+    triggerWaste().subscribe(() => {
       if (this.isAwake()) {
-        if (this.isWasteFull()) {
-          displayMessage(`Yuck *${this.animal.sound}*! So dirty, I'm not going to leave waste anymore!`);
-          this.lifemeter.decreaseHealth();
-        } else {
-          this.increaseWaste();
-        }
+        displayMessage('Yay poop!');
+
+        this.lifemeter.increaseWaste();
+      }
+    });
+
+    this.lifemeter.isFilthy.subscribe(() => {
+      if (this.isAwake()) {
+        displayMessage(`Yuck *${this.animal.sound}*! So dirty, I'm not going to leave waste anymore!`);
       }
     });
   }
 
   isAwake() {
     return this.state === 'awake';
-  }
-
-  isWasteFull() {
-    return this.waste >= WASTEMAX;
-  }
-
-  increaseWaste() {
-    this.waste += 1;
   }
 
   /**

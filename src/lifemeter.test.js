@@ -1,4 +1,4 @@
-const { LIFEMETERMAX, LIFEMETERMIN } = require('./constants');
+const { LIFEMETERMAX, LIFEMETERMIN, WASTEMAX } = require('./constants');
 const Lifemeter = require('./lifemeter');
 
 describe('Lifemeter: initialize()', () => {
@@ -8,6 +8,7 @@ describe('Lifemeter: initialize()', () => {
     expect(lifemeter.hunger).toEqual(LIFEMETERMAX);
     expect(lifemeter.health).toEqual(LIFEMETERMAX);
     expect(lifemeter.happiness).toEqual(LIFEMETERMAX);
+    expect(lifemeter.waste).toEqual(0);
   });
 });
 
@@ -212,5 +213,68 @@ describe('Lifemeter: decreaseHappiness()', () => {
     lifemeter.decreaseHappiness();
 
     expect(lifemeter.happiness).toEqual(0);
+  });
+});
+
+describe('Lifemeter: getWaste()', () => {
+  it('should return current waste stat', () => {
+    const lifemeter = new Lifemeter();
+    lifemeter.waste = 4;
+
+    expect(lifemeter.getWaste()).toEqual(4);
+  });
+});
+
+describe('Lifemeter: increaseWaste()', () => {
+  it('should increase waste by 1', () => {
+    const lifemeter = new Lifemeter();
+    lifemeter.waste = 4;
+
+    lifemeter.increaseWaste();
+
+    expect(lifemeter.waste).toEqual(5);
+  });
+
+  it('should trigger isFilthy subject if waste is >= WASTEMAX', () => {
+    expect.assertions(1);
+
+    const lifemeter = new Lifemeter();
+    lifemeter.waste = WASTEMAX;
+    lifemeter.isFilthy.subscribe((filthy) => {
+      expect(filthy).toBeTruthy();
+    });
+
+    lifemeter.increaseWaste();
+  });
+
+  it('should not increase waste by 1 if > LIFEMETERMAX', () => {
+    const lifemeter = new Lifemeter();
+    lifemeter.health = 10;
+    lifemeter.waste = WASTEMAX;
+
+    lifemeter.increaseWaste();
+
+    expect(lifemeter.health).toEqual(9);
+    expect(lifemeter.waste).toEqual(WASTEMAX);
+  });
+});
+
+describe('Lifemeter: decreaseWaste()', () => {
+  it('should decrease waste by 1', () => {
+    const lifemeter = new Lifemeter();
+    lifemeter.waste = 5;
+
+    lifemeter.decreaseWaste();
+
+    expect(lifemeter.waste).toEqual(4);
+  });
+
+  it('should not decrease waste by 1 if waste is already 0', () => {
+    const lifemeter = new Lifemeter();
+    lifemeter.waste = 0;
+
+    lifemeter.decreaseWaste();
+
+    expect(lifemeter.waste).toEqual(0);
   });
 });
