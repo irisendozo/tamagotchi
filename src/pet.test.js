@@ -34,7 +34,6 @@ describe('Pet: initialize()', () => {
     expect(pet.animal.type).toEqual(expect.any(String));
     expect(pet.animal.sound).toEqual(expect.any(String));
     expect(pet.gender).toEqual(expect.any(String));
-    expect(pet.age).toEqual(1);
     expect(pet.state).toEqual('awake');
   });
 });
@@ -83,6 +82,7 @@ describe('Pet: setName()', () => {
 describe('Pet: displayStatus()', () => {
   beforeEach(() => {
     Lifemeter.mockImplementation(() => ({
+      getAge: jest.fn().mockReturnValue(1),
       getHunger: jest.fn().mockReturnValue(5),
       getHealth: jest.fn().mockReturnValue(5),
       getHappiness: jest.fn().mockReturnValue(5),
@@ -109,6 +109,13 @@ describe('Pet: triggerWakeUpCycles()', () => {
   beforeEach(() => {
     jest.useFakeTimers();
     triggerMorning.mockReturnValue(timer(100));
+    Lifemeter.mockImplementation(() => ({
+      getAge: jest.fn().mockReturnValue(1),
+      getHunger: jest.fn().mockReturnValue(5),
+      getHealth: jest.fn().mockReturnValue(5),
+      getHappiness: jest.fn().mockReturnValue(5),
+      increaseAge: jest.fn(),
+    }));
   });
 
   it('should display wake up message + status', () => {
@@ -124,12 +131,11 @@ describe('Pet: triggerWakeUpCycles()', () => {
   it('should increase age', () => {
     const pet = new Pet();
     pet.lifemeter = new Lifemeter();
-    pet.age = 1;
 
     pet.triggerWakeUpCycles();
     jest.runOnlyPendingTimers();
 
-    expect(pet.age).toEqual(2);
+    expect(pet.lifemeter.increaseAge).toHaveBeenCalledTimes(1);
   });
 
   it('should set state to awake', () => {
@@ -153,18 +159,6 @@ describe('Pet: setWakeUpState()', () => {
     pet.setWakeUpState();
 
     expect(pet.state).toEqual('awake');
-  });
-});
-
-describe('Pet: increaseAge()', () => {
-  it('should increase age of pet by 1', () => {
-    const pet = new Pet();
-    pet.lifemeter = new Lifemeter();
-    pet.age = 1;
-
-    pet.increaseAge();
-
-    expect(pet.age).toEqual(2);
   });
 });
 

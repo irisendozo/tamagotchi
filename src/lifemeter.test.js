@@ -1,4 +1,6 @@
-const { LIFEMETERMAX, LIFEMETERMIN, WASTEMAX } = require('./constants');
+const {
+  LIFEMETERMAX, LIFEMETERMIN, WASTEMAX, OLDAGE,
+} = require('./constants');
 const Lifemeter = require('./lifemeter');
 
 describe('Lifemeter: initialize()', () => {
@@ -9,6 +11,41 @@ describe('Lifemeter: initialize()', () => {
     expect(lifemeter.health).toEqual(LIFEMETERMAX);
     expect(lifemeter.happiness).toEqual(LIFEMETERMAX);
     expect(lifemeter.waste).toEqual(0);
+    expect(lifemeter.age).toEqual(1);
+  });
+});
+
+describe('Lifemeter: getAge()', () => {
+  it('should get age', () => {
+    const lifemeter = new Lifemeter();
+    lifemeter.age = 5;
+
+    expect(lifemeter.getAge()).toBe(5);
+  });
+});
+
+describe('Lifemeter: increaseAge()', () => {
+  it('should increase age if < OLDAGE', () => {
+    const lifemeter = new Lifemeter();
+    lifemeter.age = OLDAGE - 1;
+
+    lifemeter.increaseAge();
+
+    expect(lifemeter.age).toEqual(OLDAGE);
+  });
+
+  it('should trigger isDead if age === OLDAGE', () => {
+    expect.assertions(2);
+
+    const lifemeter = new Lifemeter();
+    lifemeter.age = OLDAGE;
+
+    lifemeter.isDead.subscribe((dead) => {
+      expect(dead).toBeTruthy();
+    });
+    lifemeter.increaseAge();
+
+    expect(lifemeter.age).toEqual(OLDAGE);
   });
 });
 

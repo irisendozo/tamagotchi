@@ -5,6 +5,7 @@ const LIFECYCLEMS = 60000;
 const LIFEMETERMAX = 5;
 const LIFEMETERMIN = 2;
 const WASTEMAX = 10;
+const OLDAGE = 12;
 
 // Pet store name
 const PETSTORE = 'The Zodiac';
@@ -59,6 +60,7 @@ module.exports = {
   LIFEMETERMAX,
   LIFEMETERMIN,
   WASTEMAX,
+  OLDAGE,
   PETSTORE,
   ANIMALS,
   GENDERS,

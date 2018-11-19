@@ -20,7 +20,6 @@ class Pet {
   constructor() {
     this.animal = selectAnimal();
     this.gender = selectGender();
-    this.age = 1;
     this.state = 'awake';
     this.waste = 0;
   }
@@ -46,7 +45,7 @@ class Pet {
     this.lifemeter = lifemeter;
 
     this.displayStatus();
-    this.increaseAge();
+    this.lifemeter.increaseAge();
 
     this.triggerWakeUpCycles();
     this.triggerSleepingCycles();
@@ -76,7 +75,7 @@ class Pet {
   displayStatus() {
     displayMessage(`This is my status for today:
 
-    Age: ${this.age} cycle old
+    Age: ${this.lifemeter.getAge()} cycle old
     Happiness: ${this.lifemeter.getHappiness()}
     Hunger: ${this.lifemeter.getHunger()}
     Health: ${this.lifemeter.getHealth()}`);
@@ -96,16 +95,12 @@ class Pet {
       displayMessage(`Just woke up *${this.animal.sound}*, what a beautiful day!`);
       this.displayStatus();
       this.setWakeUpState();
-      this.increaseAge();
+      this.lifemeter.increaseAge();
     });
   }
 
   setWakeUpState() {
     this.state = 'awake';
-  }
-
-  increaseAge() {
-    this.age += 1;
   }
 
   /**

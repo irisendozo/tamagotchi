@@ -1,6 +1,8 @@
 const { Subject } = require('rxjs');
 
-const { LIFEMETERMAX, LIFEMETERMIN, WASTEMAX } = require('./constants');
+const {
+  LIFEMETERMAX, LIFEMETERMIN, WASTEMAX, OLDAGE,
+} = require('./constants');
 
 /**
  * Represents pet status life meter
@@ -13,12 +15,25 @@ class Lifemeter {
     this.health = LIFEMETERMAX;
     this.happiness = LIFEMETERMAX;
     this.waste = 0;
+    this.age = 1;
 
     this.isDead = new Subject();
     this.isHungry = new Subject();
     this.isSick = new Subject();
     this.isFilthy = new Subject();
     this.isSad = new Subject();
+  }
+
+  getAge() {
+    return this.age;
+  }
+
+  increaseAge() {
+    if (this.age < OLDAGE) {
+      this.age += 1;
+    } else {
+      this.isDead.next(true);
+    }
   }
 
   getHunger() {
