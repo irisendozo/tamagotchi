@@ -33,7 +33,7 @@ describe('Lifemeter: displayStatus()', () => {
 
     lifemeter.displayStatus();
 
-    expect(displayMessage).toHaveBeenCalledWith(`This is my status for today:
+    expect(displayMessage).toHaveBeenCalledWith(`Current pet status:
 
     Age: 1 cycle old
     Happiness: 5

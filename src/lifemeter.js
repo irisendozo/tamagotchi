@@ -49,7 +49,7 @@ class Lifemeter {
   }
 
   getHunger() {
-    return this.getStat('hunger');
+    return this.hunger;
   }
 
   increaseHunger() {
@@ -61,7 +61,7 @@ class Lifemeter {
   }
 
   getHealth() {
-    return this.getStat('health');
+    return this.health;
   }
 
   increaseHealth() {
@@ -73,7 +73,7 @@ class Lifemeter {
   }
 
   getHappiness() {
-    return this.getStat('happiness');
+    return this.happiness;
   }
 
   increaseHappiness() {
@@ -85,18 +85,7 @@ class Lifemeter {
   }
 
   getWaste() {
-    return this.getStat('waste');
-  }
-
-  /**
-   * Get status
-   *
-   * @param {string} stat
-   * @returns {Number} Number corresponding to stat
-   * @memberof Lifemeter
-   */
-  getStat(stat) {
-    return this[stat];
+    return this.waste;
   }
 
   /**
@@ -106,6 +95,7 @@ class Lifemeter {
    * @memberof Lifemeter
    */
   increaseStat(stat) {
+    console.log(stat);
     if (this[stat] < LIFEMETERMAX) {
       this[stat] += 1;
     }

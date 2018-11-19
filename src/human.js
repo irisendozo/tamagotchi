@@ -1,4 +1,4 @@
-const { startReadingInput, userInputDetected } = require('./utils/input');
+const { startReadingInput, stopReadingInput, userInputDetected } = require('./utils/input');
 const {
   askMultipleChoice, displayMessage,
 } = require('./utils/console');
@@ -26,6 +26,8 @@ class Human {
     startReadingInput();
 
     userInputDetected().subscribe(() => {
+      // Stop reading user input to allow questions to be prompted
+      stopReadingInput();
       this.triggerUserAction();
     });
   }
@@ -55,6 +57,8 @@ class Human {
       displayMessage('You have cleaned your pet\'s waste!');
       this.lifemeter.displayStatus();
     }
+
+    startReadingInput();
   }
 }
 
