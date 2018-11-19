@@ -44,7 +44,7 @@ class Pet {
   async startLife(lifemeter) {
     this.lifemeter = lifemeter;
 
-    this.displayStatus();
+    this.lifemeter.displayStatus();
     this.lifemeter.increaseAge();
 
     this.triggerWakeUpCycles();
@@ -72,15 +72,6 @@ class Pet {
     this.name = name;
   }
 
-  displayStatus() {
-    displayMessage(`This is my status for today:
-
-    Age: ${this.lifemeter.getAge()} cycle old
-    Happiness: ${this.lifemeter.getHappiness()}
-    Hunger: ${this.lifemeter.getHunger()}
-    Health: ${this.lifemeter.getHealth()}`);
-  }
-
   /**
    * Triggers waking up habit:
    *  - display waking up message
@@ -93,9 +84,9 @@ class Pet {
   triggerWakeUpCycles() {
     triggerMorning().subscribe(() => {
       displayMessage(`Just woke up *${this.animal.sound}*, what a beautiful day!`);
-      this.displayStatus();
-      this.setWakeUpState();
+      this.lifemeter.displayStatus();
       this.lifemeter.increaseAge();
+      this.setWakeUpState();
     });
   }
 

@@ -1,7 +1,14 @@
 const {
   LIFEMETERMAX, LIFEMETERMIN, WASTEMAX, OLDAGE,
 } = require('./constants');
+const {
+  displayMessage,
+} = require('./utils/console');
 const Lifemeter = require('./lifemeter');
+
+jest.mock('./utils/console', () => ({
+  displayMessage: jest.fn(),
+}));
 
 describe('Lifemeter: initialize()', () => {
   it('should initialize lifemeter stats', () => {
@@ -12,6 +19,26 @@ describe('Lifemeter: initialize()', () => {
     expect(lifemeter.happiness).toEqual(LIFEMETERMAX);
     expect(lifemeter.waste).toEqual(0);
     expect(lifemeter.age).toEqual(1);
+  });
+});
+
+describe('Lifemeter: displayStatus()', () => {
+  it('should display current lifemeter status', () => {
+    const lifemeter = new Lifemeter();
+    lifemeter.age = 1;
+    lifemeter.hunger = 5;
+    lifemeter.happiness = 5;
+    lifemeter.health = 5;
+    lifemeter.waste = 0;
+
+    lifemeter.displayStatus();
+
+    expect(displayMessage).toHaveBeenCalledWith(`This is my status for today:
+
+    Age: 1 cycle old
+    Happiness: 5
+    Hunger: 5
+    Health: 5`);
   });
 });
 

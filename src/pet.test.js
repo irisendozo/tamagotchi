@@ -79,32 +79,6 @@ describe('Pet: setName()', () => {
   });
 });
 
-describe('Pet: displayStatus()', () => {
-  beforeEach(() => {
-    Lifemeter.mockImplementation(() => ({
-      getAge: jest.fn().mockReturnValue(1),
-      getHunger: jest.fn().mockReturnValue(5),
-      getHealth: jest.fn().mockReturnValue(5),
-      getHappiness: jest.fn().mockReturnValue(5),
-    }));
-  });
-
-  it('should display current pet status', () => {
-    const pet = new Pet();
-    pet.lifemeter = new Lifemeter();
-    pet.age = 1;
-
-    pet.displayStatus();
-
-    expect(displayMessage).toHaveBeenCalledWith(`This is my status for today:
-
-    Age: 1 cycle old
-    Happiness: 5
-    Hunger: 5
-    Health: 5`);
-  });
-});
-
 describe('Pet: triggerWakeUpCycles()', () => {
   beforeEach(() => {
     jest.useFakeTimers();
@@ -115,6 +89,7 @@ describe('Pet: triggerWakeUpCycles()', () => {
       getHealth: jest.fn().mockReturnValue(5),
       getHappiness: jest.fn().mockReturnValue(5),
       increaseAge: jest.fn(),
+      displayStatus: jest.fn(),
     }));
   });
 
@@ -125,7 +100,8 @@ describe('Pet: triggerWakeUpCycles()', () => {
     pet.triggerWakeUpCycles();
     jest.runOnlyPendingTimers();
 
-    expect(displayMessage).toHaveBeenCalledTimes(2);
+    expect(displayMessage).toHaveBeenCalledTimes(1);
+    expect(pet.lifemeter.displayStatus).toHaveBeenCalled();
   });
 
   it('should increase age', () => {

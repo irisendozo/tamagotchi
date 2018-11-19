@@ -53,6 +53,7 @@ describe('Human: triggerUserAction()', () => {
       increaseHappiness: jest.fn(),
       increaseHealth: jest.fn(),
       decreaseWaste: jest.fn(),
+      displayStatus: jest.fn(),
     }));
   });
 
@@ -64,5 +65,6 @@ describe('Human: triggerUserAction()', () => {
 
     expect(human.lifemeter.increaseHunger).toHaveBeenCalled();
     expect(displayMessage).toHaveBeenCalledTimes(1);
+    expect(human.lifemeter.displayStatus).toHaveBeenCalledTimes(1);
   });
 });

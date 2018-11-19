@@ -1,6 +1,9 @@
 const { Subject } = require('rxjs');
 
 const {
+  displayMessage,
+} = require('./utils/console');
+const {
   LIFEMETERMAX, LIFEMETERMIN, WASTEMAX, OLDAGE,
 } = require('./constants');
 
@@ -22,6 +25,15 @@ class Lifemeter {
     this.isSick = new Subject();
     this.isFilthy = new Subject();
     this.isSad = new Subject();
+  }
+
+  displayStatus() {
+    displayMessage(`Current pet status:
+
+    Age: ${this.getAge()} cycle old
+    Happiness: ${this.getHappiness()}
+    Hunger: ${this.getHunger()}
+    Health: ${this.getHealth()}`);
   }
 
   getAge() {

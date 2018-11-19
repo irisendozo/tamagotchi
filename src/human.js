@@ -41,15 +41,19 @@ class Human {
     if (action === 'Feed') {
       this.lifemeter.increaseHunger();
       displayMessage('You have fed your pet!');
+      this.lifemeter.displayStatus();
     } else if (action === 'Play') {
       this.lifemeter.increaseHappiness();
       displayMessage('You have played with your pet!');
+      this.lifemeter.displayStatus();
     } else if (action === 'Cure') {
       this.lifemeter.increaseHealth();
       displayMessage('You have cured your pet!');
+      this.lifemeter.displayStatus();
     } else if (action === 'Clean waste') {
       this.lifemeter.decreaseWaste();
       displayMessage('You have cleaned your pet\'s waste!');
+      this.lifemeter.displayStatus();
     }
   }
 }
