@@ -95,7 +95,6 @@ class Lifemeter {
    * @memberof Lifemeter
    */
   increaseStat(stat) {
-    console.log(stat);
     if (this[stat] < LIFEMETERMAX) {
       this[stat] += 1;
     }
