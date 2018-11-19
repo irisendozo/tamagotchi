@@ -7,4 +7,4 @@ test:
   stage: test
   script:
     - npm install
-    - npm run test:ci
+    - npm run test

@@ -1,4 +1,4 @@
-# Tamagotchi [![build status](https://gitlab.com/nesiri/trafficlights/badges/master/build.svg)](https://gitlab.com/nesiri/trafficlights/commits/master) [![coverage report](https://gitlab.com/nesiri/trafficlights/badges/master/coverage.svg)](https://gitlab.com/nesiri/trafficlights/commits/master)
+# Tamagotchi [![build status](https://gitlab.com/nesiri/tamagotchi/badges/master/build.svg)](https://gitlab.com/nesiri/tamagotchi/commits/master) [![coverage report](https://gitlab.com/nesiri/tamagotchi/badges/master/coverage.svg)](https://gitlab.com/nesiri/tamagotchi/commits/master)
 
 This is an interactive command-line tamagotchi app based on https://en.wikipedia.org/wiki/Tamagotchi. The animals available as pets are based on the Chinese Zodiac.
 
