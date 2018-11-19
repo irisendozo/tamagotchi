@@ -1,6 +1,7 @@
 // Pet life cycle in milliseconds
 // The pet ages every increase in life cycle
-const LIFECYCLEMS = 60000;
+// Life cycle in MS set to 30 minutes
+const LIFECYCLEMS = 1800000;
 
 // Maximum threshold on all life meter stats
 const LIFEMETERMAX = 5;
